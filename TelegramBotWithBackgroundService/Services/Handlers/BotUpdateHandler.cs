@@ -3,11 +3,19 @@ using Telegram.Bot;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
+using TelegramBotWithBackgroundService.Bot.Models;
+using TelegramBotWithBackgroundService.Bot.Services.UserRepositories;
 
 namespace TelegramBotWithBackgroundService.Bot.Services.Handlers
 {
     public class BotUpdateHandler : IUpdateHandler
     {
+        private readonly IUserRepository _userRepository;
+
+        public BotUpdateHandler(IUserRepository userRepository)
+        {
+            _userRepository = userRepository;
+        }
         public Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
@@ -40,6 +48,13 @@ namespace TelegramBotWithBackgroundService.Bot.Services.Handlers
         {
             try
             {
+                var user = new UserModel()
+                {
+                    Id = message.Chat.Id,
+                    UserName = message.From.Username
+                };
+                await _userRepository.Add(user);
+
                 await botClient.SendTextMessageAsync(
                     chatId: message.Chat.Id,
                     text: $"You said:\n<i>{message.Text}</i>",
