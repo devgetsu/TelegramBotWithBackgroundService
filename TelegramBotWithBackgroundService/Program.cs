@@ -1,7 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Telegram.Bot;
+using Telegram.Bot.Polling;
 using TelegramBotWithBackgroundService.Bot.Persistance;
 using TelegramBotWithBackgroundService.Bot.Services.BackgroundServices;
+using TelegramBotWithBackgroundService.Bot.Services.Handlers;
 using TelegramBotWithBackgroundService.Bot.Services.UserRepositories;
 
 namespace TelegramBotWithBackgroundService.Bot
@@ -25,9 +27,9 @@ namespace TelegramBotWithBackgroundService.Bot
 
             builder.Services.AddHostedService<BotBackgroundService>();
             builder.Services.AddHostedService<HolAhvolBackgroundService>();
+            builder.Services.AddSingleton<IUpdateHandler, BotUpdateHandler>();
 
             var app = builder.Build();
-
 
             if (app.Environment.IsDevelopment())
             {

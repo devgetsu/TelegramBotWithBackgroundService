@@ -9,8 +9,9 @@ namespace TelegramBotWithBackgroundService.Bot.Services.BackgroundServices
     public class HolAhvolBackgroundService : BackgroundService
     {
         private readonly IServiceScopeFactory _serviceScopeFactory;
-        private readonly ITelegramBotClient _client;
-        public HolAhvolBackgroundService(IServiceScopeFactory serviceScopeFactory, ITelegramBotClient client)
+        private readonly TelegramBotClient _client;
+
+        public HolAhvolBackgroundService(IServiceScopeFactory serviceScopeFactory, TelegramBotClient client)
         {
             _serviceScopeFactory = serviceScopeFactory;
             _client = client;
@@ -23,7 +24,6 @@ namespace TelegramBotWithBackgroundService.Bot.Services.BackgroundServices
                 using (var scope = _serviceScopeFactory.CreateScope())
                 {
                     var userRepository = scope.ServiceProvider.GetRequiredService<IUserRepository>();
-
                     var users = await userRepository.GetAllUsers();
 
                     foreach (var user in users)
@@ -31,7 +31,6 @@ namespace TelegramBotWithBackgroundService.Bot.Services.BackgroundServices
                         await SendNotification(user, stoppingToken);
                     }
                 }
-
                 await Task.Delay(TimeSpan.FromDays(1), stoppingToken);
             }
         }
@@ -40,9 +39,10 @@ namespace TelegramBotWithBackgroundService.Bot.Services.BackgroundServices
         {
             _client.SendTextMessageAsync(
                 chatId: user.Id,
-                text: "Yaxshimisiz aka?Bugun danmi yoki Bugun dammi?",
+                text: "Yaxshimisiz aka? Bugun dammi yoki Bugun danmi?",
                 cancellationToken: token);
             return Task.CompletedTask;
         }
     }
+
 }

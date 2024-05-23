@@ -6,10 +6,10 @@ namespace TelegramBotWithBackgroundService.Bot.Services.BackgroundServices
 {
     public class BotBackgroundService : BackgroundService
     {
-        private readonly ITelegramBotClient _client;
+        private readonly TelegramBotClient _client;
         private readonly IUpdateHandler _handler;
 
-        public BotBackgroundService(ITelegramBotClient client, IUpdateHandler handler)
+        public BotBackgroundService(TelegramBotClient client, IUpdateHandler handler)
         {
             _client = client;
             _handler = handler;
@@ -24,7 +24,6 @@ namespace TelegramBotWithBackgroundService.Bot.Services.BackgroundServices
 
             Console.WriteLine("Start listening {0}", me.Username);
 
-
             _client.StartReceiving(
                 _handler.HandleUpdateAsync,
                 _handler.HandlePollingErrorAsync,
@@ -34,4 +33,5 @@ namespace TelegramBotWithBackgroundService.Bot.Services.BackgroundServices
                 }, stoppingToken);
         }
     }
+
 }
