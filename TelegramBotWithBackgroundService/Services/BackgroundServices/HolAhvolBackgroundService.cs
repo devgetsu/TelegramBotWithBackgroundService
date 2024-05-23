@@ -1,0 +1,48 @@
+﻿using Microsoft.Extensions.DependencyInjection;
+using Telegram.Bot;
+using Telegram.Bot.Types;
+using TelegramBotWithBackgroundService.Bot.Models;
+using TelegramBotWithBackgroundService.Bot.Services.UserRepositories;
+
+namespace TelegramBotWithBackgroundService.Bot.Services.BackgroundServices
+{
+    public class HolAhvolBackgroundService : BackgroundService
+    {
+        private readonly IServiceScopeFactory _serviceScopeFactory;
+        private readonly ITelegramBotClient _client;
+        public HolAhvolBackgroundService(IServiceScopeFactory serviceScopeFactory, ITelegramBotClient client)
+        {
+            _serviceScopeFactory = serviceScopeFactory;
+            _client = client;
+        }
+
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        {
+            while (!stoppingToken.IsCancellationRequested)
+            {
+                using (var scope = _serviceScopeFactory.CreateScope())
+                {
+                    var userRepository = scope.ServiceProvider.GetRequiredService<IUserRepository>();
+
+                    var users = await userRepository.GetAllUsers();
+
+                    foreach (var user in users)
+                    {
+                        await SendNotification(user, stoppingToken);
+                    }
+                }
+
+                await Task.Delay(TimeSpan.FromDays(1), stoppingToken);
+            }
+        }
+
+        private Task SendNotification(UserModel user, CancellationToken token)
+        {
+            _client.SendTextMessageAsync(
+                chatId: user.Id,
+                text: "Yaxshimisiz aka?Bugun danmi yoki Bugun dammi?",
+                cancellationToken: token);
+            return Task.CompletedTask;
+        }
+    }
+}
