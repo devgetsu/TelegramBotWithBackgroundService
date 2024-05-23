@@ -6,30 +6,28 @@ namespace TelegramBotWithBackgroundService.Bot.Services.UserRepositories
 {
     public class UserRepository : IUserRepository
     {
-        private readonly IServiceScopeFactory _serviceScopeFactory;
+        private readonly AppBotDbContext _appBotDbContext;
 
-        public UserRepository(IServiceScopeFactory serviceScopeFactory)
+        public UserRepository(AppBotDbContext context)
         {
-            _serviceScopeFactory = serviceScopeFactory;
+            _appBotDbContext = context;
         }
 
         public async Task Add(UserModel user)
         {
-            using (var scope = _serviceScopeFactory.CreateScope())
+            var res = await _appBotDbContext.Users.FirstOrDefaultAsync(x => x.Id == user.Id);
+            if (res == null)
             {
-                var context = scope.ServiceProvider.GetRequiredService<AppBotDbContext>();
-                await context.Users.AddAsync(user);
-                await context.SaveChangesAsync();
+                return;
             }
+            await _appBotDbContext.Users.AddAsync(user);
+            await _appBotDbContext.SaveChangesAsync();
         }
 
         public async Task<List<UserModel>> GetAllUsers()
         {
-            using (var scope = _serviceScopeFactory.CreateScope())
-            {
-                var context = scope.ServiceProvider.GetRequiredService<AppBotDbContext>();
-                return await context.Users.ToListAsync();
-            }
+            return await _appBotDbContext.Users.ToListAsync();
         }
     }
+
 }
