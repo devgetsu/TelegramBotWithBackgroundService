@@ -14,6 +14,7 @@ namespace TelegramBotWithBackgroundService.Bot
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            // Add services to the container.
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -21,15 +22,17 @@ namespace TelegramBotWithBackgroundService.Bot
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddDbContext<AppBotDbContext>(options =>
             {
-                options.UseNpgsql(connectionString: "Host=localhost;Port=5432;Database=BotDb;User Id=postgres;Password=root;");
+                options.UseNpgsql("Host=localhost;Port=5432;Database=BotDb;User Id=postgres;Password=root;");
             });
-            builder.Services.AddSingleton(p => new TelegramBotClient("7010618404:AAHKxhc2VkIU4mymjKfxVPRHD-RuDuNL6JI"));
+            builder.Services.AddSingleton(p => new TelegramBotClient("YOUR_BOT_TOKEN"));
+
+            builder.Services.AddSingleton<IUpdateHandler, BotUpdateHandler>();
 
             builder.Services.AddHostedService<BotBackgroundService>();
             builder.Services.AddHostedService<HolAhvolBackgroundService>();
-            builder.Services.AddSingleton<IUpdateHandler, BotUpdateHandler>();
 
             var app = builder.Build();
+
 
             if (app.Environment.IsDevelopment())
             {

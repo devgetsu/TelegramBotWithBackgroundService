@@ -2,6 +2,7 @@
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using TelegramBotWithBackgroundService.Bot.Models;
+using TelegramBotWithBackgroundService.Bot.Persistance;
 using TelegramBotWithBackgroundService.Bot.Services.UserRepositories;
 
 namespace TelegramBotWithBackgroundService.Bot.Services.BackgroundServices
@@ -37,12 +38,10 @@ namespace TelegramBotWithBackgroundService.Bot.Services.BackgroundServices
 
         private Task SendNotification(UserModel user, CancellationToken token)
         {
-            _client.SendTextMessageAsync(
+            return _client.SendTextMessageAsync(
                 chatId: user.Id,
                 text: "Yaxshimisiz aka? Bugun dammi yoki Bugun danmi?",
                 cancellationToken: token);
-            return Task.CompletedTask;
         }
     }
-
 }

@@ -15,7 +15,7 @@ namespace TelegramBotWithBackgroundService.Bot.Services.BackgroundServices
             _handler = handler;
         }
 
-        protected async override Task ExecuteAsync(CancellationToken stoppingToken)
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             var me = await _client.GetMeAsync(stoppingToken);
 
@@ -27,11 +27,11 @@ namespace TelegramBotWithBackgroundService.Bot.Services.BackgroundServices
             _client.StartReceiving(
                 _handler.HandleUpdateAsync,
                 _handler.HandlePollingErrorAsync,
-                new ReceiverOptions()
+                new ReceiverOptions
                 {
                     ThrowPendingUpdates = true
-                }, stoppingToken);
+                },
+                stoppingToken);
         }
     }
-
 }
