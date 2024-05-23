@@ -32,16 +32,24 @@ namespace TelegramBotWithBackgroundService.Bot.Services.BackgroundServices
                         await SendNotification(user, stoppingToken);
                     }
                 }
-                await Task.Delay(TimeSpan.FromDays(1), stoppingToken);
+                await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);
             }
         }
 
         private Task SendNotification(UserModel user, CancellationToken token)
         {
-            return _client.SendTextMessageAsync(
-                chatId: user.Id,
-                text: "Yaxshimisiz aka? Bugun dammi yoki Bugun danmi?",
-                cancellationToken: token);
+            try
+            {
+                return _client.SendTextMessageAsync(
+                    chatId: user.Id,
+                    text: "Yaxshimisiz aka? Bugun dammi yoki Bugun danmi?",
+                    cancellationToken: token);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Qaysidir telba blockladi botni");
+                return Task.CompletedTask;
+            }
         }
     }
 }
