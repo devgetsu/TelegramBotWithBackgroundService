@@ -24,7 +24,7 @@ namespace TelegramBotWithBackgroundService.Bot
             {
                 options.UseNpgsql("Host=localhost;Port=5432;Database=BotDb;User Id=postgres;Password=root;");
             });
-            builder.Services.AddSingleton(p => new TelegramBotClient("YOUR_BOT_TOKEN"));
+            builder.Services.AddSingleton(p => new TelegramBotClient("7010618404:AAHKxhc2VkIU4mymjKfxVPRHD-RuDuNL6JI"));
 
             builder.Services.AddSingleton<IUpdateHandler, BotUpdateHandler>();
 
