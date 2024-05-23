@@ -21,11 +21,13 @@ namespace TelegramBotWithBackgroundService.Bot
             {
                 options.UseNpgsql(connectionString: "Host=localhost;Port=5432;Database=BotDb;User Id=postgres;Password=root;");
             });
+            builder.Services.AddSingleton(p => new TelegramBotClient("7010618404:AAHKxhc2VkIU4mymjKfxVPRHD-RuDuNL6JI"));
+
+            builder.Services.AddHostedService<BotBackgroundService>();
+            builder.Services.AddHostedService<HolAhvolBackgroundService>();
 
             var app = builder.Build();
 
-            builder.Services.AddSingleton(p => new TelegramBotClient("7010618404:AAHKxhc2VkIU4mymjKfxVPRHD-RuDuNL6JI"));
-            builder.Services.AddHostedService<BotBackgroundService>();
 
             if (app.Environment.IsDevelopment())
             {
