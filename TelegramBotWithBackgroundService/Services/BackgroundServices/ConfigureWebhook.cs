@@ -6,18 +6,12 @@ using TelegramBotWithBackgroundService.Bot.Models;
 
 namespace TelegramBotWithBackgroundService.Bot.Services.BackgroundServices
 {
-    public class ConfigureWebhook : BackgroundService
+    public class ConfigureWebhook(
+        IConfiguration configuration,
+        ITelegramBotClient botClient) : BackgroundService
     {
-        private readonly BotConfiguration _configuration;
-        private readonly ITelegramBotClient _botClient;
-
-        public ConfigureWebhook(
-            IConfiguration configuration,
-            ITelegramBotClient botClient)
-        {
-            _configuration = configuration.GetSection("BotConfiguration").Get<BotConfiguration>();
-            _botClient = botClient;
-        }
+        private readonly BotConfiguration _configuration = configuration.GetSection("BotConfiguration").Get<BotConfiguration>()!;
+        private readonly ITelegramBotClient _botClient = botClient;
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
