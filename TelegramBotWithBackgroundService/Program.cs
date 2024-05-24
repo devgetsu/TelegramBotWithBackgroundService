@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Telegram.Bot;
 using Telegram.Bot.Polling;
+using TelegramBotWithBackgroundService.Bot.Models;
 using TelegramBotWithBackgroundService.Bot.Persistance;
 using TelegramBotWithBackgroundService.Bot.Services.BackgroundServices;
 using TelegramBotWithBackgroundService.Bot.Services.Handlers;
@@ -24,11 +25,16 @@ namespace TelegramBotWithBackgroundService.Bot
             {
                 options.UseNpgsql("Host=localhost;Port=5432;Database=BotDb;User Id=postgres;Password=root;");
             });
-            builder.Services.AddSingleton(p => new TelegramBotClient("7010618404:AAHKxhc2VkIU4mymjKfxVPRHD-RuDuNL6JI"));
-
             builder.Services.AddSingleton<IUpdateHandler, BotUpdateHandler>();
 
-            builder.Services.AddHostedService<BotBackgroundService>();
+            var botConfig = builder.Configuration.GetSection("BotConfiguration")
+    .Get<BotConfiguration>();
+
+            builder.Services.AddHttpClient("webhook")
+                .AddTypedClient<ITelegramBotClient>(httpClient
+                    => new TelegramBotClient(botConfig.Token, httpClient));
+
+            builder.Services.AddHostedService<ConfigureWebhook>();
             builder.Services.AddHostedService<HolAhvolBackgroundService>();
 
             var app = builder.Build();
@@ -41,12 +47,27 @@ namespace TelegramBotWithBackgroundService.Bot
                 app.UseSwaggerUI();
             }
 
-            app.UseHttpsRedirection();
+            app.UseRouting();
 
-            app.UseAuthorization();
+            app.UseCors(ops =>
+            {
+                ops.AllowAnyHeader()
+                   .AllowAnyMethod()
+                   .AllowAnyOrigin();
+            });
 
 
-            app.MapControllers();
+            app.UseEndpoints(endpoints =>
+            {
+                var token = botConfig.Token;
+
+                endpoints.MapControllerRoute(
+                    name: "webhook",
+                    pattern: $"bot/{token}",
+                    new { controller = "WebHookConnect", action = "Connector" });
+
+                endpoints.MapControllers();
+            });
 
             app.Run();
         }

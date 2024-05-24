@@ -16,7 +16,7 @@ namespace TelegramBotWithBackgroundService.Bot.Services.UserRepositories
         public async Task Add(UserModel user)
         {
             var res = await _appBotDbContext.Users.FirstOrDefaultAsync(x => x.Id == user.Id);
-            if (res == null)
+            if (res != null)
             {
                 return;
             }
